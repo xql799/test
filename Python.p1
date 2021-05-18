@@ -1,0 +1,30 @@
+import requests
+from lxml import etree
+
+def get_html(url):
+    headers = {'user-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36'}
+
+    try:
+        html = requests.get(url,headers = headers)
+        html.encoding = html.apparent_encoding
+        if html.status_code == 200:
+            print('成功获取源代码')
+            #print(html.text)
+    except Exception as e :
+        print('获取源代码失败：%s' % e)
+
+    return html.text
+
+def parse_html(html):
+    html=etree.HTML(html)
+    lis = html.xpath("//ol[@class='grid_view']/li")
+
+    for li in lis:
+        name = li.xpath(".//a//span[@class='title']/text()")[0]
+        print(name)
+if __name__=='__main__':
+
+   url = 'https://movie.douban.com/top250'
+
+   html = get_html(url)
+   movies = parse_html(html)
